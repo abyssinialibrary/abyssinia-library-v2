@@ -1,14 +1,55 @@
 ---
+// src/layouts/Layout.astro
 import Header from '../components/Header.astro';
-interface Props { title: string; }
+
+interface Props {
+	title: string;
+}
+
 const { title } = Astro.props;
 ---
+
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" /><meta name="description" content="Abyssinia Library - Book Summaries" /><meta name="viewport" content="width=device-width" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" /><title>{title}</title>
-    <style is:global> @import '../styles/global.css'; </style>
-  </head>
-  <body> <Header /> <main class="container"> <slot /> </main> </body>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="description" content="Abyssinia Library - Book Summaries" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<title>{title}</title>
+		
+		<!-- THE TELEGRAM SCRIPT -->
+		<script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+		<style is:global>
+			@import '../styles/global.css';
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main class="container">
+			<slot /> <!-- Page content will be injected here -->
+		</main>
+
+    <script is:inline>
+      // This inline script initializes Telegram features
+      try {
+        const tg = window.Telegram.WebApp;
+        
+        // This tells Telegram that your web app is ready
+        tg.ready();
+
+        // This makes the app expand to full height, which is best for mini apps
+        tg.expand();
+        
+        // Optional: Listen for theme changes from Telegram and apply them
+        tg.onEvent('themeChanged', function() {
+          document.documentElement.className = tg.colorScheme; // 'light' or 'dark'
+        });
+        
+      } catch (e) {
+        console.error('Telegram Web App script is not loaded or failed.', e);
+      }
+    </script>
+	</body>
 </html>
