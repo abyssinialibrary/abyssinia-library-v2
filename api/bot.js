@@ -1,4 +1,4 @@
-// File: api/bot.js (with debugging)
+// File: api/bot.js (with welcome message and debugging)
 import axios from 'axios';
 import { Buffer } from 'buffer';
 
@@ -27,8 +27,7 @@ async function createFileOnGitHub(filePath, content, commitMessage) {
 }
 
 export default async function handler(request, response) {
-    // --- DEBUGGING ---
-    // Log the environment variables that the function can see.
+    // Debugging log
     console.log("--- Environment Variables ---");
     console.log("TELEGRAM_BOT_TOKEN exists:", !!TELEGRAM_BOT_TOKEN);
     console.log("ADMIN_USER_ID exists:", !!ADMIN_USER_ID);
@@ -44,29 +43,58 @@ export default async function handler(request, response) {
         const message = body.message;
         const chatId = message.chat.id;
         const userId = message.from.id;
+        const text = message.text || ''; // Ensure text is not undefined
 
         if (!TELEGRAM_BOT_TOKEN || !ADMIN_USER_ID || !GITHUB_TOKEN) {
             console.error("One or more environment variables are missing!");
-            // Do not try to send a message back if the token is missing.
             return response.status(500).send('Server configuration error.');
         }
 
+        // --- SECURITY CHECK ---
         if (userId.toString() !== ADMIN_USER_ID) {
             await sendMessage(chatId, "❌ You are not authorized to use this bot.");
             return response.status(200).send('Unauthorized user.');
         }
+        
+        // --- NEW: HANDLE THE /start COMMAND ---
+        if (text === '/start') {
+            const welcomeMessage = `👋 Welcome, Admin!
+            
+This is your private **Content Assistant Bot** for the Abyssinia Library.
 
+**To add a new book summary:**
+1. Go to your public channel and find the book file message.
+2. **Forward** that message here.
+3. **Reply** to the forwarded message with the summary details in this format:
+
+\`\`\`
+Title: The Book Title
+Author: The Author's Name
+Category: The Book's Category
+Description: A short, one-sentence description.
+---
+The full, detailed summary text starts here...
+\`\`\`
+
+The bot will handle the rest!`;
+
+            await sendMessage(chatId, welcomeMessage);
+            return response.status(200).send('Welcome message sent.');
+        }
+
+
+        // --- WORKFLOW CHECK FOR ADDING A BOOK ---
         if (!message.reply_to_message || !message.reply_to_message.forward_from_chat) {
-            await sendMessage(chatId, "⚠️ Please use this bot by forwarding a message from the channel, and then *replying* to it with the summary details.");
+            await sendMessage(chatId, "⚠️ Invalid command. Please send `/start` for instructions or use the forward-and-reply method to add a new book.");
             return response.status(200).send('Invalid workflow.');
         }
 
+        // --- DATA EXTRACTION ---
         const forwardedMsg = message.reply_to_message;
         const channelUsername = forwardedMsg.forward_from_chat.username;
         const messageId = forwardedMsg.forward_from_message_id;
         const downloadUrl = `https://t.me/${channelUsername}/${messageId}`;
 
-        const text = message.text;
         const parts = text.split('\n---\n');
         if (parts.length < 2) {
             await sendMessage(chatId, "❌ Invalid format. Please make sure your summary details are separated by `---`.");
@@ -90,6 +118,7 @@ export default async function handler(request, response) {
             return response.status(200).send('Missing fields.');
         }
 
+        // --- FILE CREATION ---
         const finalMdContent = `---
 title: "${title}"
 author: "${author}"
