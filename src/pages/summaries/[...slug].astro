@@ -1,0 +1,13 @@
+---
+import { getCollection } from 'astro:content'; import Layout from '../../layouts/Layout.astro'; import FavoriteButton from '../../components/FavoriteButton.jsx';
+export async function getStaticPaths() { const summaries = await getCollection('summaries'); return summaries.map(s => ({ params: { slug: s.slug }, props: { s } })); }
+const { s: summary } = Astro.props; const { Content } = await summary.render();
+---
+<Layout title={`${summary.data.title} | AbyssiniaLibrary`}>
+  <article class="summary-content">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+      <div> <h1>{summary.data.title}</h1> <p class="card-meta">By {summary.data.author} • {summary.data.category}</p> </div>
+      <FavoriteButton client:load slug={summary.slug} />
+    </div> <hr /> <Content />
+  </article>
+</Layout>

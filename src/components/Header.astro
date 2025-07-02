@@ -1,0 +1,47 @@
+---
+// src/components/Header.astro
+const telegramChannelUrl = "https://t.me/abyssinialibrary";
+---
+<header class="site-header">
+  <div class="container">
+    <nav>
+      <div class="logo">
+        <a href="/">📚 AbyssiniaLibrary</a>
+      </div>
+
+      <!-- Desktop Links (will be hidden on mobile by CSS) -->
+      <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/favorites">Favorites</a>
+        <a href={telegramChannelUrl} target="_blank" rel="noopener noreferrer">Subscribe</a>
+      </div>
+
+      <!-- Mobile Hamburger Button (will be shown on mobile by CSS) -->
+      <button class="menu-toggle" id="menu-toggle-btn" aria-label="Open menu">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+
+    </nav>
+  </div>
+</header>
+
+<!-- Mobile Navigation Menu (hidden off-screen by default) -->
+<div class="mobile-nav" id="mobile-nav-menu">
+  <a href="/">Home</a>
+  <a href="/favorites">Favorites</a>
+  <a href={telegramChannelUrl} target="_blank" rel="noopener noreferrer">Subscribe</a>
+</div>
+
+<script>
+  // This script handles the toggling of the mobile menu
+  const menuToggle = document.getElementById('menu-toggle-btn');
+  const mobileNav = document.getElementById('mobile-nav-menu');
+
+  if (menuToggle && mobileNav) {
+    menuToggle.addEventListener('click', () => {
+      mobileNav.classList.toggle('is-open');
+    });
+  }
+</script>

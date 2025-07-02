@@ -1,0 +1,8 @@
+---
+import { getCollection } from 'astro:content'; import Layout from '../layouts/Layout.astro'; import SummaryList from '../components/SummaryList.jsx';
+const allSummaries = await getCollection('summaries');
+---
+<Layout title="Your Favorites | AbyssiniaLibrary">
+  <h1>Your Favorite Summaries</h1> <p>These are the summaries you've saved. They are stored in your browser.</p>
+  <SummaryList client:load allSummaries={allSummaries} page="favorites" />
+</Layout>

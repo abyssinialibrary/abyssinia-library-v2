@@ -1,0 +1,8 @@
+---
+import { getCollection } from 'astro:content'; import Layout from '../layouts/Layout.astro'; import SummaryList from '../components/SummaryList.jsx';
+const allSummaries = await getCollection('summaries');
+---
+<Layout title="AbyssiniaLibrary | Home">
+  <h1>All Book Summaries</h1> <p>Search, filter, and find your next great read.</p>
+  <SummaryList client:load allSummaries={allSummaries} />
+</Layout>

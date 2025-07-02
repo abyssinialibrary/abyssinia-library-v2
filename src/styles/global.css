@@ -1,0 +1,234 @@
+/* src/styles/global.css (GitHub Theme) */
+
+/* GitHub-themed color variables */
+:root {
+  --bg-color: #0d1117; /* GitHub's main dark background */
+  --text-color: #c9d1d9; /* GitHub's primary light text */
+  --primary-color: #58a6ff; /* GitHub's link blue */
+  --card-bg: #161b22; /* GitHub's slightly lighter card background */
+  --border-color: #30363d; /* GitHub's border color */
+  --heart-color: #f778ba; /* A fitting pink/magenta for the heart */
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  margin: 0;
+  padding: 80px 0 20px;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+/* Header Styles */
+.site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--card-bg);
+  border-bottom: 1px solid var(--border-color);
+  padding: 1rem 0;
+  z-index: 1000;
+}
+.site-header nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.site-header a {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  font-weight: 500;
+  margin-left: 10px;
+  color: var(--text-color); /* Ensure desktop links also use the correct text color */
+}
+.site-header a:hover {
+  background-color: var(--bg-color);
+  text-decoration: none;
+}
+.site-header .logo a {
+  border: none;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+.site-header .logo a:hover {
+  background: none;
+}
+
+/* Summary List Styles */
+.summary-controls {
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.search-input {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+.category-filters button {
+  background: none;
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+  padding: 0.5rem 1rem;
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.category-filters button.active {
+  background-color: var(--primary-color);
+  color: #0d1117; /* Dark text on active button for contrast */
+  border-color: var(--primary-color);
+  font-weight: bold;
+}
+.category-filters button:hover:not(.active) {
+  background-color: var(--card-bg);
+}
+
+.summary-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+.summary-card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.summary-card h2 {
+  margin-top: 0;
+}
+.card-meta {
+  color: #8b949e; /* GitHub's secondary text color */
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+.card-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+}
+.read-more {
+  font-weight: bold;
+}
+
+/* Favorite Button */
+.favorite-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+}
+.heart-icon {
+  width: 24px;
+  height: 24px;
+  fill: #8b949e; /* Default empty heart color (GitHub secondary text) */
+  transition: fill 0.2s;
+}
+.favorite-btn.favorited .heart-icon {
+  fill: var(--heart-color); /* Filled heart color */
+}
+
+/* Summary Detail Page */
+.summary-content {
+  background-color: var(--card-bg);
+  border-radius: 8px;
+  padding: 2rem;
+  border: 1px solid var(--border-color);
+}
+.summary-content h1 {
+  margin-top: 0;
+}
+
+
+/* --- CSS FOR RESPONSIVE NAVIGATION --- */
+
+/* The hamburger button for mobile */
+.menu-toggle {
+  display: none; /* Hidden by default on large screens */
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 1001; /* Make sure it's on top */
+}
+
+.menu-toggle .icon-bar {
+  display: block;
+  width: 25px;
+  height: 3px;
+  background-color: var(--text-color);
+  margin: 5px 0;
+  transition: all 0.2s;
+}
+
+/* Mobile menu container that slides out */
+.mobile-nav {
+  position: fixed;
+  top: 0;
+  right: -100%; /* Start off-screen */
+  width: 70%;
+  max-width: 300px;
+  height: 100vh;
+  background-color: var(--card-bg);
+  box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+  transition: right 0.3s ease-in-out;
+  padding-top: 80px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--border-color);
+}
+
+.mobile-nav.is-open {
+  right: 0; /* Slide into view */
+}
+
+.mobile-nav a {
+  padding: 1rem 1.5rem;
+  font-size: 1.2rem;
+  border: none;
+  border-bottom: 1px solid var(--border-color);
+  width: 100%;
+  text-align: left;
+  border-radius: 0;
+  margin: 0;
+  color: var(--text-color);
+}
+
+/* This is the media query: rules inside only apply on screens 768px or smaller */
+@media (max-width: 768px) {
+  .site-header .nav-links {
+    display: none; /* Hide the desktop links */
+  }
+
+  .menu-toggle {
+    display: block; /* Show the hamburger button */
+  }
+}
