@@ -1,11 +1,8 @@
-//     File: api/bot.js
-// This is a Vercel Serverless Function that acts as our Telegram Bot.
-
+// File: api/bot.js (with debugging)
 import axios from 'axios';
 import { Buffer } from 'buffer';
 
 // --- CONFIGURATION ---
-// These are securely loaded from Vercel's Environment Variables
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const ADMIN_USER_ID = process.env.ADMIN_USER_ID;
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
@@ -18,29 +15,26 @@ const GITHUB_REPO_PATH = 'src/content/summaries';
 
 async function sendMessage(chatId, text) {
     const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
-    await axios.post(url, {
-        chat_id: chatId,
-        text: text,
-        parse_mode: 'Markdown',
-    });
+    await axios.post(url, { chat_id: chatId, text: text, parse_mode: 'Markdown' });
 }
 
 async function createFileOnGitHub(filePath, content, commitMessage) {
     const url = `https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/contents/${filePath}`;
     const encodedContent = Buffer.from(content).toString('base64');
-    const data = {
-        message: commitMessage,
-        content: encodedContent,
-        branch: 'main',
-    };
-    const headers = {
-        'Authorization': `token ${GITHUB_TOKEN}`,
-        'Accept': 'application/vnd.github.v3+json',
-    };
+    const data = { message: commitMessage, content: encodedContent, branch: 'main' };
+    const headers = { 'Authorization': `token ${GITHUB_TOKEN}`, 'Accept': 'application/vnd.github.v3+json' };
     await axios.put(url, data, { headers });
 }
 
 export default async function handler(request, response) {
+    // --- DEBUGGING ---
+    // Log the environment variables that the function can see.
+    console.log("--- Environment Variables ---");
+    console.log("TELEGRAM_BOT_TOKEN exists:", !!TELEGRAM_BOT_TOKEN);
+    console.log("ADMIN_USER_ID exists:", !!ADMIN_USER_ID);
+    console.log("GITHUB_TOKEN exists:", !!GITHUB_TOKEN);
+    console.log("---------------------------");
+
     try {
         const { body } = request;
         if (!body || !body.message) {
@@ -50,6 +44,12 @@ export default async function handler(request, response) {
         const message = body.message;
         const chatId = message.chat.id;
         const userId = message.from.id;
+
+        if (!TELEGRAM_BOT_TOKEN || !ADMIN_USER_ID || !GITHUB_TOKEN) {
+            console.error("One or more environment variables are missing!");
+            // Do not try to send a message back if the token is missing.
+            return response.status(500).send('Server configuration error.');
+        }
 
         if (userId.toString() !== ADMIN_USER_ID) {
             await sendMessage(chatId, "❌ You are not authorized to use this bot.");
@@ -102,7 +102,7 @@ downloadUrl: "${downloadUrl}"
 ${contentText}
 `;
         
-        const fileName = `${title.toLowerCase().replace(/[^a-z0-g]+/g, '-').replace(/^-+|-+$/g, '')}.md`;
+        const fileName = `${title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')}.md`;
         const filePath = `${GITHUB_REPO_PATH}/${fileName}`;
         const commitMessage = `feat: add summary for "${title}" via bot`;
 
