@@ -1,13 +1,62 @@
 ---
-import { getCollection } from 'astro:content'; import Layout from '../../layouts/Layout.astro'; import FavoriteButton from '../../components/FavoriteButton.jsx';
-export async function getStaticPaths() { const summaries = await getCollection('summaries'); return summaries.map(s => ({ params: { slug: s.slug }, props: { s } })); }
-const { s: summary } = Astro.props; const { Content } = await summary.render();
+// src/pages/summaries/[...slug].astro
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import FavoriteButton from '../../components/FavoriteButton.jsx';
+
+export async function getStaticPaths() {
+  const summaries = await getCollection('summaries');
+  return summaries.map(s => ({
+    params: { slug: s.slug },
+    props: { s }
+  }));
+}
+
+const { s: summary } = Astro.props;
+const { Content } = await summary.render();
 ---
 <Layout title={`${summary.data.title} | AbyssiniaLibrary`}>
   <article class="summary-content">
     <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-      <div> <h1>{summary.data.title}</h1> <p class="card-meta">By {summary.data.author} • {summary.data.category}</p> </div>
+      <div>
+        <h1>{summary.data.title}</h1>
+        <p class="card-meta">By {summary.data.author} • {summary.data.category}</p>
+      </div>
       <FavoriteButton client:load slug={summary.slug} />
-    </div> <hr /> <Content />
+    </div>
+
+    <!-- NEW: Download Button Area -->
+    <!-- This entire block will only be rendered if a downloadUrl exists in the frontmatter -->
+    {summary.data.downloadUrl && (
+      <div class="summary-actions">
+        <a href={summary.data.downloadUrl} class="btn-download" target="_blank" rel="noopener noreferrer">
+          Download Book
+        </a>
+      </div>
+    )}
+
+    <hr />
+    <Content />
   </article>
+
+  <!-- We need to add a bit of styling for our new button -->
+  <style>
+    .summary-actions {
+      margin: 1.5rem 0;
+    }
+    .btn-download {
+      display: inline-block;
+      background-color: var(--primary-color);
+      color: #0d1117; /* Dark text for high contrast on the blue button */
+      font-weight: bold;
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    .btn-download:hover {
+      opacity: 0.85;
+      text-decoration: none;
+    }
+  </style>
 </Layout>
