@@ -1,4 +1,4 @@
-// File: api/bot.js
+//   File: api/bot.js
 // This is a Vercel Serverless Function that acts as our Telegram Bot.
 
 import axios from 'axios';
